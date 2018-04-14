@@ -26,6 +26,13 @@ public class MesaDeJantar {
     /* array[0...QUANT_FILOSOFOS - 1] representando os garfos na mesa : 
 	 * true = garfo na mesa; false = garfo com filósofo
      */
+    
+    private int[] quantidadeComidaQueFilosofoComeu = new int[5];
+    
+    private int porcaoComida = 100;
+    
+    private boolean acabouAcomida = false;
+    
     boolean[] garfos = new boolean[QUANT_FILOSOFOS];
     /* array [0...QUANT_FILOSOFOS - 1]
 	   representando o estado de cada um dos filósofos
@@ -46,6 +53,8 @@ public class MesaDeJantar {
             filosofos[i] = PENSANDO;
             /* Nenhum filósofo tentou comer ainda */
             tentativasParaComer[i] = 0;
+            
+            quantidadeComidaQueFilosofoComeu[i] = 0;
         }
     }
 
@@ -149,6 +158,7 @@ public class MesaDeJantar {
 
     /* Imprimindo os estados dos filósofos */
     private void imprimeEstadosFilosofos() {
+        if(this.porcaoComida <= 0) return;
         String texto = "*";
         System.out.print("Filósofos = [ ");
         for (int i = 0; i < QUANT_FILOSOFOS; i++) {
@@ -170,6 +180,7 @@ public class MesaDeJantar {
 
     /* Imprimindo os que estão na mesa */
     private void imprimeGarfos() {
+        if(this.porcaoComida <= 0) return;
         String garfo = "*";
         System.out.print("Garfos    = [ ");
         for (int i = 0; i < QUANT_FILOSOFOS; i++) {
@@ -185,10 +196,33 @@ public class MesaDeJantar {
 
     /* Imprimindo as tentativas de comer dos dos filósofos */
     private void imprimeTentativasParaComer() {
+        if(this.porcaoComida <= 0) return;
         System.out.print("Tentou comer = [ ");
         for (int i = 0; i < QUANT_FILOSOFOS; i++) {
             System.out.print(filosofos[i] + "  ");
         }
         System.out.println("]");
+    }
+    
+    public void comeu(int i){
+        this.porcaoComida--;
+        if(this.porcaoComida == 0) this.acabouAcomida = true;
+        this.quantidadeComidaQueFilosofoComeu[i]++;
+    }
+    
+    public int getQuantidadeComida(){
+        return this.porcaoComida < 0 ? 0 : this.porcaoComida;
+    }
+    
+    public void filosoAvisouQueAcabouAcomida(){
+        this.acabouAcomida = true;
+    }
+    
+    public boolean jaAcabouAComida(){
+        return this.acabouAcomida;
+    }
+    
+    public int exibeQuantidadeQueFilosofoComeu(int i){
+        return this.quantidadeComidaQueFilosofoComeu[i];
     }
 }

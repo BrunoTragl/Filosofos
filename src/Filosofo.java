@@ -1,16 +1,11 @@
 
 import jantardosfilosofos.MesaDeJantar;
 
-
-
-
 public class Filosofo extends Thread {
-
 
     final static int TEMPO_MAXIMO = 100;
     /* Referência à mesa de jantar */
-    
-    
+
     MesaDeJantar mesa;
     /* Filósofo na mesa [0,1,2,3,4] */
     int filosofo;
@@ -19,25 +14,36 @@ public class Filosofo extends Thread {
         /* construtor da classe pai */
         super(nomeThread);
         this.mesa = mesa;
-        this.filosofo   = filosofo;
+        this.filosofo = filosofo;
     }
 
     public void run() {
         int tempo = 0;
         /* Laço representando a vida de um filósofo : pensar e comer */
         while (true) {
-            /* sorteando o tempo pelo qual o filósofo vai pensar */
-            tempo = (int) (Math.random() * TEMPO_MAXIMO);
-            /* filósofo pensando */
-            pensar(tempo);
-            /* filósofo pegando garfos */
-            pegarGarfos();
-            /* sorteando o tempo pelo qual o filósofo vai comer */
-            tempo = (int) (Math.random() * TEMPO_MAXIMO);
-            /* filósofo comendo */
-            comer(tempo);
-            /* filósofo devolvendo garfos */
-            devolverGarfos();
+            if (aindaTemComida() > 0) {
+                if(mesa.getQuantidadeComida() == 0)
+                    super.stop();
+                
+                /* sorteando o tempo pelo qual o filósofo vai pensar */
+                tempo = (int) (Math.random() * TEMPO_MAXIMO);
+                /* filósofo pensando */
+                pensar(tempo);
+                /* filósofo pegando garfos */
+                pegarGarfos();
+                /* sorteando o tempo pelo qual o filósofo vai comer */
+                tempo = (int) (Math.random() * TEMPO_MAXIMO);
+                /* filósofo comendo */
+                comer(tempo);
+                /* filósofo devolvendo garfos */
+                devolverGarfos();
+
+                if(mesa.jaAcabouAComida())
+                    exibeQuantidadeQueFilosofoComeu(filosofo);
+                
+            } else {
+                super.stop();
+            }
         }
     }
 
@@ -55,6 +61,7 @@ public class Filosofo extends Thread {
     private void comer(int tempo) {
         try {
             sleep(tempo);
+            mesa.comeu(filosofo);
         } catch (InterruptedException e) {
             System.out.println("Filófoso comeu demais, morreu");
         }
@@ -69,6 +76,22 @@ public class Filosofo extends Thread {
     private void devolverGarfos() {
         mesa.devolvendoGarfos(filosofo);
     }
+
+    private int aindaTemComida() {
+        return mesa.getQuantidadeComida();
+    }
+
+    private void informaQuantidadeComida() {
+        if (!mesa.jaAcabouAComida()) {
+            int quantidadeComida = aindaTemComida();
+            System.out.println("Ainda temos " + quantidadeComida + " porções!");
+        }else{
+            System.out.println("Não temos mais comida!");
+        }
+    }
+    
+    private void exibeQuantidadeQueFilosofoComeu(int i){
+        int quantidadeComidaFilosoComeu = mesa.exibeQuantidadeQueFilosofoComeu(i);
+        System.out.println("Eu filósofo do array número " + filosofo + " comi " + quantidadeComidaFilosoComeu + " porções!");
+    }
 }
-
-
